@@ -33,6 +33,10 @@ const PAGE_META: Record<string, { title: string; subtitle: string }> = {
     title: 'Parse Tree Visualizer',
     subtitle: 'Interactive SVG tree diagram generated from the predictive parsing derivation with pan, zoom, and node inspector.',
   },
+  '/practice': {
+    title: 'Practice Arena',
+    subtitle: 'Interactive compiler design challenges, test string acceptance quizzes, and real-time scoring.',
+  },
   '/docs': {
     title: 'LL(1) Compiler Theory & Documentation',
     subtitle: 'Comprehensive guide to CFGs, left recursion, left factoring, FIRST/FOLLOW, and LL(1) parser design.',
@@ -49,7 +53,7 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070a12] text-slate-100 flex">
+    <div className="min-h-screen bg-[#050807] text-[#F5F7F5] flex">
       {/* Persistent Sidebar */}
       <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
 
@@ -61,7 +65,7 @@ export const Layout: React.FC = () => {
       >
         <Header title={currentMeta.title} subtitle={currentMeta.subtitle} />
         <PipelineStepper />
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto bg-[#050807]">
           <Outlet />
         </main>
       </div>

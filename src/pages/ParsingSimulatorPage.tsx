@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   PlayCircle,
   SkipForward,
@@ -6,7 +6,6 @@ import {
   RotateCcw,
   Play,
   Pause,
-  FastForward,
   CheckCircle2,
   AlertCircle,
   AlertTriangle,
@@ -18,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useGrammar } from '../context/GrammarContext.tsx';
-import { ParseStep, EPSILON } from '../types/compiler.ts';
+import { ParseStep } from '../types/compiler.ts';
 import { compilerService } from '../services/compilerService.ts';
 import { getBenchmarkInputs, BenchmarkItem } from '../utils/benchmarkInputs.ts';
 
@@ -153,13 +152,6 @@ export const ParsingSimulatorPage: React.FC = () => {
     setIsPlaying(true);
   };
 
-  const handleJumpToEnd = () => {
-    setIsPlaying(false);
-    if (parsingTrace.length > 0) {
-      setCurrentStep(parsingTrace.length - 1);
-    }
-  };
-
   const handleReset = () => {
     setIsPlaying(false);
     setCurrentStep(0);
@@ -195,7 +187,7 @@ export const ParsingSimulatorPage: React.FC = () => {
 
   if (!activeGrammar) {
     return (
-      <div className="p-8 text-center text-slate-400 bg-slate-900/60 rounded-xl border border-slate-800">
+      <div className="p-8 text-center text-[#A0ADA4] bg-[#0D1410] rounded-xl border border-[#1B3326]">
         Please define or load a valid grammar in the Editor to start simulation.
       </div>
     );
@@ -208,13 +200,13 @@ export const ParsingSimulatorPage: React.FC = () => {
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Non-LL(1) Warning Banner */}
       {!isLL1 && tableResult && (
-        <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-800/60 text-amber-200 text-xs flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-[#FFD740]/10 border border-[#FFD740]/30 text-[#FFD740] text-xs flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-[#FFD740] flex-shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <strong className="block text-sm text-amber-300">
+            <strong className="block text-sm text-[#FFD740]">
               Non-LL(1) Grammar Warning
             </strong>
-            <p className="text-slate-300">
+            <p className="text-[#A0ADA4]">
               The active grammar contains {tableResult.conflicts.length} multiply-defined cells in its parsing table.
               Predictive LL(1) parsing requires exactly one rule per cell. The parser will proceed using first-alternative tie breaking, but deterministic parsing cannot be guaranteed without eliminating conflicts.
             </p>
@@ -223,14 +215,14 @@ export const ParsingSimulatorPage: React.FC = () => {
       )}
 
       {/* Input String Editor & Controls */}
-      <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-4 shadow-sm">
+      <div className="p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] space-y-4 shadow-sm">
         <div>
-          <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-            <PlayCircle className="w-4 h-4 text-indigo-400" />
+          <h2 className="text-base font-bold text-[#F5F7F5] flex items-center gap-2">
+            <PlayCircle className="w-4 h-4 text-[#00E676]" />
             Stack-Based LL(1) Predictive Parsing Simulator
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Synchronized with active grammar (<strong className="text-indigo-300">{activeGrammar.startSymbol}</strong> start symbol, {activeGrammar.terminals.length} terminals).
+          <p className="text-xs text-[#A0ADA4] mt-0.5">
+            Synchronized with active grammar (<strong className="text-[#69F0AE]">{activeGrammar.startSymbol}</strong> start symbol, {activeGrammar.terminals.length} terminals).
           </p>
         </div>
 
@@ -242,10 +234,10 @@ export const ParsingSimulatorPage: React.FC = () => {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="e.g. a b c or id + id * id (leave blank for empty input ε)"
-              className="w-full bg-[#070a12] border border-slate-800 rounded-lg px-3.5 py-2.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-[#050807] border border-[#1B3326] rounded-lg px-3.5 py-2.5 text-xs font-mono text-[#F5F7F5] placeholder-[#68776D] focus:outline-none focus:border-[#00E676]"
             />
             {inputVal === '' && (
-              <span className="absolute right-3 top-2.5 text-[11px] font-mono text-slate-500 pointer-events-none">
+              <span className="absolute right-3 top-2.5 text-[11px] font-mono text-[#68776D] pointer-events-none">
                 [empty input ε]
               </span>
             )}
@@ -254,7 +246,7 @@ export const ParsingSimulatorPage: React.FC = () => {
           <button
             onClick={() => handleRunParsing(inputVal)}
             disabled={isParsing}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition shadow-md shadow-indigo-600/25 disabled:opacity-50 cursor-pointer"
+            className="px-5 py-2.5 bg-[#00E676] hover:bg-[#00C853] text-[#050807] rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
           >
             <Zap className={`w-4 h-4 ${isParsing ? 'animate-spin' : ''}`} />
             <span>{isParsing ? 'Parsing...' : 'Run Parsing'}</span>
@@ -263,15 +255,15 @@ export const ParsingSimulatorPage: React.FC = () => {
 
         {/* Grammar-Synchronized Benchmark Input Buttons */}
         {benchmarks.length > 0 && (
-          <div className="space-y-2 pt-1 border-t border-slate-800/60">
+          <div className="space-y-2 pt-1 border-t border-[#1B3326]">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
+              <span className="text-[#A0ADA4] font-semibold uppercase tracking-wider text-[11px]">
                 Active Grammar Benchmark Inputs:
               </span>
               <button
                 onClick={handleEvaluateAllBenchmarks}
                 disabled={isEvaluatingAll}
-                className="text-[11px] text-indigo-400 hover:text-indigo-300 transition flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                className="text-[11px] text-[#00E676] hover:text-[#69F0AE] transition flex items-center gap-1 cursor-pointer disabled:opacity-50"
               >
                 <Sparkles className="w-3 h-3" />
                 {isEvaluatingAll ? 'Evaluating All...' : 'Run All Benchmarks'}
@@ -290,8 +282,8 @@ export const ParsingSimulatorPage: React.FC = () => {
                     onClick={() => handleBenchmarkClick(sample.input)}
                     className={`text-xs font-mono px-3 py-1.5 rounded-lg transition border flex items-center gap-1.5 cursor-pointer ${
                       isCurrentInput
-                        ? 'bg-indigo-950/80 border-indigo-500 text-indigo-200 font-bold shadow-sm'
-                        : 'bg-[#070a12] border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-800/40'
+                        ? 'bg-[#15231A] border-[#00E676] text-[#00E676] font-bold'
+                        : 'bg-[#111B15] border-[#1B3326] text-[#A0ADA4] hover:border-[#1B3326] hover:text-[#F5F7F5] hover:bg-[#15231A]'
                     }`}
                     title={sample.notes || sample.input}
                   >
@@ -300,16 +292,16 @@ export const ParsingSimulatorPage: React.FC = () => {
                     {/* Dynamic live badge only after actual parsing */}
                     {evalResult ? (
                       evalResult.accepted ? (
-                        <span className="inline-flex items-center text-[10px] px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-sans font-semibold">
+                        <span className="inline-flex items-center text-[10px] px-1.5 py-0.2 rounded bg-[#00E676]/10 text-[#00E676] border border-[#00E676]/30 font-sans font-semibold">
                           <Check className="w-3 h-3 mr-0.5" /> ACCEPT
                         </span>
                       ) : (
-                        <span className="inline-flex items-center text-[10px] px-1.5 py-0.2 rounded bg-rose-950 text-rose-400 border border-rose-800 font-sans font-semibold">
+                        <span className="inline-flex items-center text-[10px] px-1.5 py-0.2 rounded bg-[#FF5252]/10 text-[#FF5252] border border-[#FF5252]/30 font-sans font-semibold">
                           <X className="w-3 h-3 mr-0.5" /> REJECT
                         </span>
                       )
                     ) : (
-                      <span className="text-[9px] text-slate-400 font-sans">
+                      <span className="text-[9px] text-[#68776D] font-sans">
                         Test
                       </span>
                     )}
@@ -322,39 +314,39 @@ export const ParsingSimulatorPage: React.FC = () => {
       </div>
 
       {/* Parsing Controls & Playback HUD */}
-      <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-4">
+      <div className="p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] space-y-4">
         {/* Clearly Visible Controls Toolbar */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Status & Step Counter */}
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-[#A0ADA4] uppercase tracking-wider">
               Parsing Controls:
             </span>
 
             {parsingTrace.length > 0 && (
-              <span className="px-2.5 py-1 rounded-md bg-indigo-950/80 border border-indigo-800/60 font-mono text-xs text-indigo-300 font-bold">
+              <span className="px-2.5 py-1 rounded-md bg-[#111B15] border border-[#1B3326] font-mono text-xs text-[#00E676] font-bold">
                 Step {currentStep + 1} of {parsingTrace.length}
               </span>
             )}
 
             {/* Parsing Status Badge */}
             {parsingStatus === 'accepted' && (
-              <span className="px-2.5 py-1 rounded-md bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 text-xs font-bold flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> ACCEPTED
+              <span className="px-2.5 py-1 rounded-md bg-[#00E676]/10 text-[#00E676] border border-[#00E676]/30 text-xs font-bold flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#00E676]" /> ACCEPTED
               </span>
             )}
             {parsingStatus === 'rejected' && (
-              <span className="px-2.5 py-1 rounded-md bg-rose-950/80 text-rose-300 border border-rose-800/60 text-xs font-bold flex items-center gap-1">
-                <AlertCircle className="w-3.5 h-3.5 text-rose-400" /> REJECTED
+              <span className="px-2.5 py-1 rounded-md bg-[#FF5252]/10 text-[#FF5252] border border-[#FF5252]/30 text-xs font-bold flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5 text-[#FF5252]" /> REJECTED
               </span>
             )}
             {parsingStatus === 'parsing' && (
-              <span className="px-2.5 py-1 rounded-md bg-blue-950/80 text-blue-300 border border-blue-800/60 text-xs font-bold">
+              <span className="px-2.5 py-1 rounded-md bg-[#111B15] text-[#69F0AE] border border-[#1B3326] text-xs font-bold">
                 PARSING...
               </span>
             )}
             {parsingStatus === 'idle' && (
-              <span className="px-2.5 py-1 rounded-md bg-slate-800 text-slate-400 text-xs">
+              <span className="px-2.5 py-1 rounded-md bg-[#111B15] text-[#68776D] text-xs">
                 Awaiting Run
               </span>
             )}
@@ -365,7 +357,7 @@ export const ParsingSimulatorPage: React.FC = () => {
             <button
               onClick={() => handleRunParsing(inputVal)}
               disabled={isParsing}
-              className="px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center gap-1.5 transition shadow-sm cursor-pointer disabled:opacity-50"
+              className="px-3.5 py-2 rounded-lg bg-[#00E676] hover:bg-[#00C853] text-[#050807] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
               title="Execute backend predictive parser"
             >
               <Zap className="w-3.5 h-3.5" />
@@ -375,27 +367,27 @@ export const ParsingSimulatorPage: React.FC = () => {
             <button
               onClick={handlePrevStep}
               disabled={currentStep === 0 || parsingTrace.length === 0}
-              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs flex items-center gap-1.5 border border-slate-700 transition disabled:opacity-40 cursor-pointer"
+              className="px-3 py-2 rounded-lg bg-[#111B15] hover:bg-[#15231A] text-[#F5F7F5] font-medium text-xs flex items-center gap-1.5 border border-[#1B3326] transition disabled:opacity-40 cursor-pointer"
               title="Previous Step"
             >
-              <SkipBack className="w-3.5 h-3.5" />
+              <SkipBack className="w-3.5 h-3.5 text-[#A0ADA4]" />
               <span>Previous Step</span>
             </button>
 
             <button
               onClick={handleNextStep}
               disabled={currentStep >= parsingTrace.length - 1 || parsingTrace.length === 0}
-              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs flex items-center gap-1.5 border border-slate-700 transition disabled:opacity-40 cursor-pointer"
+              className="px-3 py-2 rounded-lg bg-[#111B15] hover:bg-[#15231A] text-[#F5F7F5] font-medium text-xs flex items-center gap-1.5 border border-[#1B3326] transition disabled:opacity-40 cursor-pointer"
               title="Next Step"
             >
               <span>Next Step</span>
-              <SkipForward className="w-3.5 h-3.5" />
+              <SkipForward className="w-3.5 h-3.5 text-[#A0ADA4]" />
             </button>
 
             <button
               onClick={isPlaying ? () => setIsPlaying(false) : handleRunAll}
               disabled={parsingTrace.length === 0}
-              className="px-3 py-2 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-700 text-indigo-300 font-medium text-xs flex items-center gap-1.5 transition disabled:opacity-40 cursor-pointer"
+              className="px-3 py-2 rounded-lg bg-[#15231A] hover:bg-[#1a2d21] border border-[#00E676]/40 text-[#00E676] font-medium text-xs flex items-center gap-1.5 transition disabled:opacity-40 cursor-pointer"
               title={isPlaying ? 'Pause Animation' : 'Auto-Play Animation'}
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
@@ -405,7 +397,7 @@ export const ParsingSimulatorPage: React.FC = () => {
             <button
               onClick={handleReset}
               disabled={parsingTrace.length === 0}
-              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs flex items-center gap-1.5 border border-slate-700 transition disabled:opacity-40 cursor-pointer"
+              className="px-3 py-2 rounded-lg bg-[#111B15] hover:bg-[#15231A] text-[#A0ADA4] hover:text-[#F5F7F5] font-medium text-xs flex items-center gap-1.5 border border-[#1B3326] transition disabled:opacity-40 cursor-pointer"
               title="Reset to Step 1"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -416,7 +408,7 @@ export const ParsingSimulatorPage: React.FC = () => {
             <select
               value={playbackSpeed}
               onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-              className="bg-slate-900 border border-slate-800 text-slate-300 text-xs px-2.5 py-2 rounded-lg focus:outline-none cursor-pointer"
+              className="bg-[#050807] border border-[#1B3326] text-[#A0ADA4] text-xs px-2.5 py-2 rounded-lg focus:outline-none focus:border-[#00E676] cursor-pointer"
             >
               <option value={1000}>Speed: 1.0s</option>
               <option value={600}>Speed: 0.6s</option>
@@ -427,80 +419,80 @@ export const ParsingSimulatorPage: React.FC = () => {
 
         {/* Current Step HUD (Stack, Remaining Input, Action) */}
         {activeStepObj && parsingTrace.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 rounded-xl bg-[#070a12] border border-slate-800 font-mono text-xs">
-            <div className="p-3 rounded-lg bg-slate-900/90 border border-slate-800">
-              <span className="text-[10px] text-slate-400 block mb-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 rounded-xl bg-[#050807] border border-[#1B3326] font-mono text-xs">
+            <div className="p-3 rounded-lg bg-[#0D1410] border border-[#1B3326]">
+              <span className="text-[10px] text-[#68776D] block mb-1">
                 Current Stack (Bottom $ → Top):
               </span>
-              <span className="text-indigo-300 font-bold text-sm block truncate">
+              <span className="text-[#69F0AE] font-bold text-sm block truncate">
                 {activeStepObj.stackDisplay}
               </span>
-              <span className="text-[10px] text-slate-400 mt-0.5 block">
-                Top of Stack: <strong className="text-indigo-400">{activeStepObj.stack[activeStepObj.stack.length - 1]}</strong>
+              <span className="text-[10px] text-[#A0ADA4] mt-0.5 block">
+                Top of Stack: <strong className="text-[#00E676]">{activeStepObj.stack[activeStepObj.stack.length - 1]}</strong>
               </span>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-900/90 border border-slate-800">
-              <span className="text-[10px] text-slate-400 block mb-1">
+            <div className="p-3 rounded-lg bg-[#0D1410] border border-[#1B3326]">
+              <span className="text-[10px] text-[#68776D] block mb-1">
                 Remaining Input (Lookahead first):
               </span>
-              <span className="text-emerald-300 font-bold text-sm block truncate">
+              <span className="text-[#00E676] font-bold text-sm block truncate">
                 {activeStepObj.inputDisplay}
               </span>
-              <span className="text-[10px] text-slate-400 mt-0.5 block">
-                Lookahead: <strong className="text-emerald-400">{activeStepObj.remainingInput[0]}</strong>
+              <span className="text-[10px] text-[#A0ADA4] mt-0.5 block">
+                Lookahead: <strong className="text-[#00E676]">{activeStepObj.remainingInput[0]}</strong>
               </span>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-900/90 border border-slate-800">
-              <span className="text-[10px] text-slate-400 block mb-1">
+            <div className="p-3 rounded-lg bg-[#0D1410] border border-[#1B3326]">
+              <span className="text-[10px] text-[#68776D] block mb-1">
                 Action / Operation:
               </span>
               <span
                 className={`font-bold text-sm block truncate ${
                   activeStepObj.status === 'accepted'
-                    ? 'text-emerald-400'
+                    ? 'text-[#00E676]'
                     : activeStepObj.status === 'error'
-                    ? 'text-rose-400'
-                    : 'text-violet-300'
+                    ? 'text-[#FF5252]'
+                    : 'text-[#F5F7F5]'
                 }`}
               >
                 {activeStepObj.action}
               </span>
-              <span className="text-[10px] text-slate-400 mt-0.5 block uppercase">
+              <span className="text-[10px] text-[#68776D] mt-0.5 block uppercase">
                 Type: {activeStepObj.status}
               </span>
             </div>
           </div>
         ) : (
-          <div className="p-4 rounded-xl bg-[#070a12] border border-slate-800 text-center text-xs text-slate-400">
-            Click <strong className="text-indigo-400">Run Parsing</strong> or select any benchmark button above to initialize the predictive parsing execution trace.
+          <div className="p-4 rounded-xl bg-[#050807] border border-[#1B3326] text-center text-xs text-[#A0ADA4]">
+            Click <strong className="text-[#00E676]">Run Parsing</strong> or select any benchmark button above to initialize the predictive parsing execution trace.
           </div>
         )}
 
         {/* Error / Result Banner */}
         {parsingError && (
-          <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 flex items-start gap-2.5 text-xs">
-            <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
+          <div className="p-4 rounded-xl bg-[#FF5252]/10 border border-[#FF5252]/30 text-[#FF5252] flex items-start gap-2.5 text-xs">
+            <AlertCircle className="w-5 h-5 text-[#FF5252] flex-shrink-0 mt-0.5" />
             <div>
               <strong className="block text-sm">Parsing Diagnostic Alert (REJECT):</strong>
-              <span>{parsingError}</span>
+              <span className="text-[#A0ADA4]">{parsingError}</span>
             </div>
           </div>
         )}
 
         {parsingStatus === 'accepted' && currentStep === parsingTrace.length - 1 && (
-          <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-[#00E676]/10 border border-[#00E676]/30 text-[#00E676] flex items-center justify-between">
             <div className="flex items-center gap-2.5 text-xs">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-[#00E676] flex-shrink-0" />
               <div>
-                <strong className="block text-sm">String Accepted!</strong>
-                <span>Derived in {parsingTrace.length} steps without error.</span>
+                <strong className="block text-sm text-[#00E676]">String Accepted!</strong>
+                <span className="text-[#A0ADA4]">Derived in {parsingTrace.length} steps without error.</span>
               </div>
             </div>
             <button
               onClick={() => navigate('/tree')}
-              className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg bg-[#00E676] hover:bg-[#00C853] text-[#050807] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer"
             >
               <Network className="w-3.5 h-3.5" /> View Parse Tree
             </button>
@@ -509,27 +501,27 @@ export const ParsingSimulatorPage: React.FC = () => {
       </div>
 
       {/* Step-by-Step Predictive Parsing Execution Trace Table */}
-      <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 shadow-sm">
+      <div className="p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] space-y-3 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-slate-200">
+            <h3 className="text-sm font-bold text-[#F5F7F5]">
               Step-by-Step Predictive Parsing Execution Trace
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#A0ADA4]">
               Columns: Step | Stack | Remaining Input | Action. Highlighted row indicates current simulation position.
             </p>
           </div>
           {parsingTrace.length > 0 && (
-            <span className="text-xs font-mono text-slate-400">
+            <span className="text-xs font-mono text-[#00E676]">
               {parsingTrace.length} Total Operations
             </span>
           )}
         </div>
 
-        <div className="rounded-xl border border-slate-800 bg-[#070a12] shadow-xl overflow-hidden">
+        <div className="rounded-xl border border-[#1B3326] bg-[#050807] shadow-xl overflow-hidden">
           <div className="overflow-x-auto max-h-[500px]">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="sticky top-0 bg-[#090d16] border-b border-slate-800 text-slate-400 z-10">
+              <thead className="sticky top-0 bg-[#111B15] border-b border-[#1B3326] text-[#A0ADA4] z-10">
                 <tr>
                   <th className="py-2.5 px-3 w-16">Step</th>
                   <th className="py-2.5 px-3 min-w-[160px]">Stack</th>
@@ -537,7 +529,7 @@ export const ParsingSimulatorPage: React.FC = () => {
                   <th className="py-2.5 px-3">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-[#1B3326]/60">
                 {parsingTrace.length > 0 ? (
                   parsingTrace.map((st, idx) => {
                     const isCurrent = idx === currentStep;
@@ -553,32 +545,32 @@ export const ParsingSimulatorPage: React.FC = () => {
                         }}
                         className={`cursor-pointer transition-colors ${
                           isCurrent
-                            ? 'bg-indigo-950/70 border-l-4 border-l-indigo-500 font-bold text-white'
+                            ? 'bg-[#15231A] border-l-4 border-l-[#00E676] font-bold text-[#F5F7F5]'
                             : isAcceptRow
-                            ? 'bg-emerald-950/20 text-emerald-200 hover:bg-emerald-950/40'
+                            ? 'bg-[#00E676]/10 text-[#00E676] hover:bg-[#00E676]/15'
                             : isErrorRow
-                            ? 'bg-rose-950/20 text-rose-200 hover:bg-rose-950/40'
-                            : 'hover:bg-slate-800/40 text-slate-300'
+                            ? 'bg-[#FF5252]/10 text-[#FF5252] hover:bg-[#FF5252]/15'
+                            : 'hover:bg-[#15231A]/40 text-[#F5F7F5]'
                         }`}
                       >
-                        <td className="py-2.5 px-3 font-bold text-slate-400">
-                          {isCurrent && <span className="text-indigo-400 mr-1.5">▶</span>}
+                        <td className="py-2.5 px-3 font-bold text-[#68776D]">
+                          {isCurrent && <span className="text-[#00E676] mr-1.5">▶</span>}
                           {st.step}
                         </td>
-                        <td className="py-2.5 px-3 text-indigo-300 font-semibold">
+                        <td className="py-2.5 px-3 text-[#69F0AE] font-semibold">
                           {st.stackDisplay}
                         </td>
-                        <td className="py-2.5 px-3 text-emerald-300">
+                        <td className="py-2.5 px-3 text-[#00E676]">
                           {st.inputDisplay}
                         </td>
                         <td className="py-2.5 px-3">
                           <span
                             className={
                               isAcceptRow
-                                ? 'text-emerald-400 font-bold'
+                                ? 'text-[#00E676] font-bold'
                                 : isErrorRow
-                                ? 'text-rose-400 font-bold'
-                                : 'text-slate-200'
+                                ? 'text-[#FF5252] font-bold'
+                                : 'text-[#F5F7F5]'
                             }
                           >
                             {st.action}
@@ -589,8 +581,8 @@ export const ParsingSimulatorPage: React.FC = () => {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={4} className="py-8 text-center text-slate-400">
-                      No parsing steps yet. Click <strong className="text-indigo-400">Run Parsing</strong> above to populate the trace table.
+                    <td colSpan={4} className="py-8 text-center text-[#68776D]">
+                      No parsing steps yet. Click <strong className="text-[#00E676]">Run Parsing</strong> above to populate the trace table.
                     </td>
                   </tr>
                 )}

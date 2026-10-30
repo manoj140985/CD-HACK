@@ -9,6 +9,7 @@ import { FirstFollowPage } from './pages/FirstFollowPage.tsx';
 import { ParsingTablePage } from './pages/ParsingTablePage.tsx';
 import { ParsingSimulatorPage } from './pages/ParsingSimulatorPage.tsx';
 import { ParseTreeVisualizerPage } from './pages/ParseTreeVisualizerPage.tsx';
+import { PracticeArenaPage } from './pages/PracticeArenaPage.tsx';
 import { DocumentationPage } from './pages/DocumentationPage.tsx';
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="table" element={<ParsingTablePage />} />
             <Route path="simulator" element={<ParsingSimulatorPage />} />
             <Route path="tree" element={<ParseTreeVisualizerPage />} />
+            <Route path="practice" element={<PracticeArenaPage />} />
             <Route path="docs" element={<DocumentationPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>

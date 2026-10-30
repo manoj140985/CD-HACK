@@ -11,8 +11,12 @@ import {
   AlertTriangle,
   ArrowRight,
   BookOpen,
-  Sparkles,
   Zap,
+  Trophy,
+  Layers,
+  FileCode2,
+  Check,
+  ChevronRight,
 } from 'lucide-react';
 import { useGrammar } from '../context/GrammarContext.tsx';
 import { getBenchmarkInputs } from '../utils/benchmarkInputs.ts';
@@ -48,213 +52,196 @@ export const DashboardPage: React.FC = () => {
     setTesting(false);
   };
 
+  const scrollToExamples = () => {
+    const el = document.getElementById('benchmark-grammars-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Workflow pipeline
   const pipelineStages = [
     {
-      title: '1. Grammar Definition',
-      desc: 'Define non-terminals, terminals, and production rules with epsilon support.',
+      title: 'Grammar Input',
+      desc: 'Define non-terminals, terminals, and production rules.',
       path: '/editor',
       icon: Code2,
-      metric: activeGrammar ? `${activeGrammar.productions.length} Productions` : 'No rules',
-      status: validation?.isValid ? 'valid' : 'pending',
+      isDone: !!(activeGrammar && activeGrammar.productions.length > 0 && validation?.isValid),
     },
     {
-      title: '2. Transformations',
-      desc: 'Eliminate immediate left recursion and perform left factoring for LL(1) suitability.',
+      title: 'Transformation',
+      desc: 'Immediate Left Recursion Elimination & Left Factoring.',
       path: '/transformations',
       icon: GitFork,
-      metric: 'Immediate & Factoring',
-      status: 'ready',
+      isDone: true,
     },
     {
-      title: '3. FIRST & FOLLOW Sets',
-      desc: 'Calculate lookahead and follow sets using fixed-point iterative convergence.',
+      title: 'FIRST / FOLLOW',
+      desc: 'Fixed-point iteration to compute lookahead sets.',
       path: '/first-follow',
       icon: Binary,
-      metric: firstFollowResult ? `${Object.keys(firstFollowResult.firstSets).length} Sets` : 'Pending',
-      status: firstFollowResult ? 'valid' : 'pending',
+      isDone: !!firstFollowResult,
     },
     {
-      title: '4. LL(1) Parse Table',
-      desc: 'Construct M[A, a] matrix, detect FIRST/FIRST & FIRST/FOLLOW conflicts.',
+      title: 'LL(1) Table',
+      desc: 'Predictive matrix M[A, a] & conflict diagnosis.',
       path: '/table',
       icon: TableProperties,
-      metric: tableResult ? (tableResult.isLL1 ? 'Conflict-Free' : `${tableResult.conflicts.length} Conflicts`) : 'Pending',
-      status: tableResult ? (tableResult.isLL1 ? 'valid' : 'conflict') : 'pending',
+      isDone: !!tableResult,
     },
     {
-      title: '5. Predictive Parsing',
-      desc: 'Execute stack-based LL(1) parsing step-by-step with matched tokens and actions.',
+      title: 'Predictive Parsing',
+      desc: 'Stack-based step-by-step token expansion.',
       path: '/simulator',
       icon: PlayCircle,
-      metric: simulationResult ? (simulationResult.accepted ? 'Accepted' : 'Syntax Error') : 'Ready',
-      status: simulationResult ? (simulationResult.accepted ? 'valid' : 'error') : 'ready',
+      isDone: !!simulationResult,
     },
     {
-      title: '6. Parse Tree',
-      desc: 'Explore the full derivation tree with parent-child links, terminal leaves, and pan/zoom.',
+      title: 'Parse Tree',
+      desc: 'Visual derivation tree with node inspection.',
       path: '/tree',
       icon: Network,
-      metric: simulationResult?.parseTree ? 'Tree Generated' : 'Awaiting Parse',
-      status: simulationResult?.parseTree ? 'valid' : 'pending',
+      isDone: !!simulationResult?.parseTree,
     },
   ];
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-900/40 p-6 md:p-8 shadow-xl shadow-indigo-950/20">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Welcome Hero Section */}
+      <div className="p-6 md:p-8 rounded-xl bg-[#0D1410] border border-[#1B3326] relative overflow-hidden">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-mono">
-              <Sparkles className="w-3.5 h-3.5" /> Compiler Design PS-03 Implementation
+          <div className="space-y-2.5 max-w-2xl">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#111B15] border border-[#1B3326] text-[#00E676] text-xs font-mono font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00E676] inline-block" />
+              Compiler Design Studio
             </div>
-            <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-              Interactive LL(1) Grammar Practice Studio
+            <h2 className="text-2xl md:text-3xl font-extrabold text-[#F5F7F5] tracking-tight">
+              Master Compiler Design Visually
             </h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Explore the complete compiler front-end pipeline. Parse context-free grammars, eliminate left recursion, compute FIRST/FOLLOW sets iteratively, build predictive parsing tables, and visualize parse trees step-by-step.
+            <p className="text-sm text-[#A0ADA4] leading-relaxed">
+              Explore grammar transformations, understand predictive parsing, and visualize how compilers process language.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => navigate('/editor')}
-              className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition cursor-pointer"
+              className="px-4 py-2.5 rounded-lg bg-[#00E676] hover:bg-[#00C853] text-[#050807] font-bold text-xs flex items-center gap-2 transition cursor-pointer shadow-sm"
             >
-              <Code2 className="w-4 h-4" /> Open Grammar Editor
+              <Code2 className="w-4 h-4" />
+              <span>Create New Grammar</span>
             </button>
             <button
-              onClick={() => navigate('/simulator')}
-              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-sm border border-slate-700 flex items-center gap-2 transition cursor-pointer"
+              onClick={scrollToExamples}
+              className="px-4 py-2.5 rounded-lg bg-[#111B15] hover:bg-[#15231A] text-[#F5F7F5] font-medium text-xs border border-[#1B3326] flex items-center gap-2 transition cursor-pointer"
             >
-              <PlayCircle className="w-4 h-4" /> Run Simulator
+              <BookOpen className="w-4 h-4 text-[#A0ADA4]" />
+              <span>Explore Examples</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            LL(1) Status
+      {/* Statistics Cards Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-4 rounded-xl bg-[#0D1410] border border-[#1B3326]">
+          <span className="text-[11px] font-semibold text-[#68776D] uppercase tracking-wider block mb-1">
+            Total Projects
           </span>
-          <div className="flex items-center gap-1.5">
-            {tableResult ? (
-              tableResult.isLL1 ? (
-                <span className="text-emerald-400 font-bold text-sm flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4" /> Valid LL(1)
-                </span>
-              ) : (
-                <span className="text-amber-400 font-bold text-sm flex items-center gap-1">
-                  <AlertTriangle className="w-4 h-4" /> Conflict ({tableResult.conflicts.length})
-                </span>
-              )
-            ) : (
-              <span className="text-slate-500 text-sm">Analyzing...</span>
-            )}
+          <div className="flex items-center justify-between">
+            <span className="text-2xl font-bold font-mono text-[#F5F7F5]">
+              {examples.length}
+            </span>
+            <FileCode2 className="w-4 h-4 text-[#00E676]" />
           </div>
+          <span className="text-[10px] text-[#A0ADA4] mt-1 block">Benchmark Suites</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            Start Symbol
+        <div className="p-4 rounded-xl bg-[#0D1410] border border-[#1B3326]">
+          <span className="text-[11px] font-semibold text-[#68776D] uppercase tracking-wider block mb-1">
+            Grammars Analyzed
           </span>
-          <span className="text-indigo-400 font-mono font-bold text-lg">
-            {activeGrammar?.startSymbol || '—'}
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-2xl font-bold font-mono text-[#F5F7F5]">
+              {activeGrammar ? activeGrammar.productions.length : 0}
+            </span>
+            <Layers className="w-4 h-4 text-[#00E676]" />
+          </div>
+          <span className="text-[10px] text-[#A0ADA4] mt-1 block">Active Productions</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            Non-Terminals
+        <div className="p-4 rounded-xl bg-[#0D1410] border border-[#1B3326]">
+          <span className="text-[11px] font-semibold text-[#68776D] uppercase tracking-wider block mb-1">
+            LL(1) Grammars
           </span>
-          <span className="text-violet-400 font-mono font-bold text-lg">
-            {activeGrammar?.nonTerminals.length ?? 0}
-          </span>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            Terminals
-          </span>
-          <span className="text-emerald-400 font-mono font-bold text-lg">
-            {activeGrammar?.terminals.length ?? 0}
-          </span>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            Productions
-          </span>
-          <span className="text-cyan-400 font-mono font-bold text-lg">
-            {activeGrammar?.productions.length ?? 0}
+          <div className="flex items-center justify-between">
+            <span className="text-2xl font-bold font-mono text-[#00E676]">
+              {tableResult?.isLL1 ? 'Valid' : 'Conflict'}
+            </span>
+            <CheckCircle2 className="w-4 h-4 text-[#00E676]" />
+          </div>
+          <span className="text-[10px] text-[#A0ADA4] mt-1 block">
+            {tableResult ? `${tableResult.conflicts.length} conflicts` : 'Unanalyzed'}
           </span>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
-            Nullable (ε)
+        <div className="p-4 rounded-xl bg-[#0D1410] border border-[#1B3326]">
+          <span className="text-[11px] font-semibold text-[#68776D] uppercase tracking-wider block mb-1">
+            Parsing Sessions
           </span>
-          <span className="text-amber-400 font-mono font-bold text-lg">
-            {firstFollowResult?.nullableNonTerminals.length ?? 0}
+          <div className="flex items-center justify-between">
+            <span className="text-2xl font-bold font-mono text-[#F5F7F5]">
+              {simulationResult ? simulationResult.totalSteps : 0}
+            </span>
+            <PlayCircle className="w-4 h-4 text-[#00E676]" />
+          </div>
+          <span className="text-[10px] text-[#A0ADA4] mt-1 block">
+            {simulationResult?.accepted ? 'String Accepted' : 'Derivation steps'}
           </span>
         </div>
       </div>
 
-      {/* Compiler Pipeline Section */}
-      <div className="space-y-3">
+      {/* Compiler Pipeline Horizontal Workflow */}
+      <div className="p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-200">Compiler Front-End Pipeline</h3>
-          <span className="text-xs text-slate-400">Click any stage to dive in</span>
+          <h3 className="text-xs font-bold text-[#F5F7F5] uppercase tracking-wider">
+            Compiler Pipeline Workflow
+          </h3>
+          <span className="text-[11px] text-[#A0ADA4]">Deterministic Top-Down LL(1) Architecture</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {pipelineStages.map((stage) => {
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
+          {pipelineStages.map((stage, idx) => {
             const Icon = stage.icon;
             return (
               <div
                 key={stage.title}
                 onClick={() => navigate(stage.path)}
-                className="group relative p-5 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900/90 transition-all cursor-pointer shadow-sm hover:shadow-indigo-500/10 flex flex-col justify-between"
+                className="p-3.5 rounded-lg bg-[#111B15] border border-[#1B3326] hover:border-[#00E676]/60 hover:bg-[#15231A] transition cursor-pointer flex flex-col justify-between space-y-2 group"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="w-9 h-9 rounded-lg bg-indigo-950/80 border border-indigo-800/60 flex items-center justify-center text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    {stage.status === 'valid' && (
-                      <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-emerald-950/70 text-emerald-400 border border-emerald-800/50 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Ready
-                      </span>
-                    )}
-                    {stage.status === 'conflict' && (
-                      <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-amber-950/70 text-amber-400 border border-amber-800/50 flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3" /> Conflict
-                      </span>
-                    )}
-                    {stage.status === 'error' && (
-                      <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-rose-950/70 text-rose-400 border border-rose-800/50 flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3" /> Reject
-                      </span>
-                    )}
+                <div className="flex items-center justify-between">
+                  <div className="w-7 h-7 rounded-md bg-[#0D1410] border border-[#1B3326] flex items-center justify-center text-[#00E676] group-hover:scale-105 transition-transform">
+                    <Icon className="w-3.5 h-3.5 text-[#00E676]" />
                   </div>
-                  <h4 className="text-sm font-semibold text-slate-100 group-hover:text-indigo-300 transition-colors">
+                  {stage.isDone ? (
+                    <span className="w-2 h-2 rounded-full bg-[#00E676]" title="Ready" />
+                  ) : (
+                    <span className="w-2 h-2 rounded-full bg-[#68776D]" title="Pending" />
+                  )}
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-semibold text-[#F5F7F5] group-hover:text-[#00E676] transition-colors">
                     {stage.title}
                   </h4>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                  <p className="text-[11px] text-[#A0ADA4] mt-0.5 line-clamp-2">
                     {stage.desc}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                  <span className="font-mono text-slate-300 font-medium">
-                    {stage.metric}
-                  </span>
-                  <span className="text-indigo-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-medium">
-                    Explore <ArrowRight className="w-3.5 h-3.5" />
-                  </span>
+                <div className="pt-1 border-t border-[#1B3326] flex items-center justify-between text-[10px] text-[#68776D]">
+                  <span>Step {idx + 1}</span>
+                  <ChevronRight className="w-3 h-3 text-[#00E676] group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>
             );
@@ -262,58 +249,89 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Practice Arena Promotional Card */}
+      <div className="p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-start sm:items-center space-x-3.5">
+          <div className="w-10 h-10 rounded-lg bg-[#111B15] border border-[#1B3326] flex items-center justify-center text-[#00E676] flex-shrink-0">
+            <Trophy className="w-5 h-5 text-[#00E676]" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-[#F5F7F5] flex items-center gap-2">
+              Practice Arena – Test Your Compiler Knowledge
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#00E676]/10 text-[#00E676] border border-[#00E676]/30">
+                Interactive
+              </span>
+            </h3>
+            <p className="text-xs text-[#A0ADA4] mt-0.5">
+              Practice string acceptance, FIRST &amp; FOLLOW calculations, and LL(1) conflict identification with live scoring and explanations.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => navigate('/practice')}
+          className="px-4 py-2 rounded-lg bg-[#00E676] hover:bg-[#00C853] text-[#050807] font-bold text-xs flex items-center gap-2 transition cursor-pointer self-start sm:self-auto flex-shrink-0"
+        >
+          <span>Enter Practice Arena</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
       {/* Quick Test Bar & Active Grammar Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Active Grammar Summary */}
-        <div className="lg:col-span-1 p-5 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+        <div className="lg:col-span-1 p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#68776D]">
                 Active Grammar
               </span>
               <button
                 onClick={() => navigate('/editor')}
-                className="text-xs text-indigo-400 hover:text-indigo-300 transition cursor-pointer"
+                className="text-xs text-[#00E676] hover:underline cursor-pointer"
               >
                 Edit Grammar &rarr;
               </button>
             </div>
-            <pre className="font-mono text-xs text-slate-300 bg-[#070a12] p-3.5 rounded-lg border border-slate-800/80 max-h-48 overflow-y-auto leading-relaxed">
+            <pre className="font-mono text-xs text-[#F5F7F5] bg-[#050807] p-3.5 rounded-lg border border-[#1B3326] max-h-48 overflow-y-auto leading-relaxed">
               {activeGrammar?.productions.map((p) => (
                 <div key={p.id}>
-                  <span className="text-violet-400">{p.lhs}</span>
-                  <span className="text-slate-500"> -&gt; </span>
-                  <span className="text-emerald-300">{p.rhs.join(' ')}</span>
+                  <span className="text-[#69F0AE] font-bold">{p.lhs}</span>
+                  <span className="text-[#68776D]"> -&gt; </span>
+                  <span className="text-[#F5F7F5]">{p.rhs.join(' ')}</span>
                 </div>
               ))}
             </pre>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-            <span>Non-Terminals: {activeGrammar?.nonTerminals.join(', ')}</span>
+          <div className="mt-4 pt-3 border-t border-[#1B3326] flex items-center justify-between text-xs text-[#A0ADA4]">
+            <span>Start: <strong className="text-[#00E676]">{activeGrammar?.startSymbol}</strong></span>
+            <span>Non-Terminals: {activeGrammar?.nonTerminals.length}</span>
           </div>
         </div>
 
         {/* Quick Simulation Playground */}
-        <div className="lg:col-span-2 p-5 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+        <div className="lg:col-span-2 p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#68776D]">
                 Quick Predictive Test
               </span>
               {simulationResult && (
                 <span
                   className={`text-xs font-semibold px-2 py-0.5 rounded ${
                     simulationResult.accepted
-                      ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/60'
-                      : 'bg-rose-950/80 text-rose-400 border border-rose-800/60'
+                      ? 'bg-[#00E676]/10 text-[#00E676] border border-[#00E676]/30'
+                      : 'bg-[#FF5252]/10 text-[#FF5252] border border-[#FF5252]/30'
                   }`}
                 >
-                  {simulationResult.accepted ? 'Accepted in ' + simulationResult.totalSteps + ' steps' : 'Rejected'}
+                  {simulationResult.accepted
+                    ? `Accepted in ${simulationResult.totalSteps} steps`
+                    : 'Rejected'}
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400 mb-3">
+            <p className="text-xs text-[#A0ADA4] mb-3">
               Enter a token string to test against the active LL(1) parsing table:
             </p>
 
@@ -322,13 +340,13 @@ export const DashboardPage: React.FC = () => {
                 type="text"
                 value={quickInput}
                 onChange={(e) => setQuickInput(e.target.value)}
-                placeholder="e.g. id + id * id"
-                className="flex-1 bg-[#070a12] border border-slate-800 rounded-lg px-3.5 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-indigo-500"
+                placeholder="e.g. id + id * id or a b c"
+                className="flex-1 bg-[#050807] border border-[#1B3326] rounded-lg px-3.5 py-2 text-xs font-mono text-[#F5F7F5] focus:outline-none focus:border-[#00E676]"
               />
               <button
                 type="submit"
                 disabled={testing}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium flex items-center gap-1.5 transition disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 bg-[#00E676] hover:bg-[#00C853] text-[#050807] rounded-lg text-xs font-bold flex items-center gap-1.5 transition disabled:opacity-50 cursor-pointer"
               >
                 <Zap className="w-3.5 h-3.5" />
                 {testing ? 'Testing...' : 'Test String'}
@@ -338,7 +356,7 @@ export const DashboardPage: React.FC = () => {
             {/* Grammar-synchronized benchmark chips */}
             {activeGrammar && (
               <div className="mt-3 flex items-center gap-1.5 flex-wrap">
-                <span className="text-[11px] text-slate-400">Benchmark inputs:</span>
+                <span className="text-[11px] text-[#68776D]">Benchmark inputs:</span>
                 {getBenchmarkInputs(activeGrammar, activeExampleId).slice(0, 6).map((sample) => (
                   <button
                     key={sample.input || 'EMPTY'}
@@ -348,7 +366,7 @@ export const DashboardPage: React.FC = () => {
                       setActiveInputString(sample.input);
                       runSimulation(sample.input);
                     }}
-                    className="text-[10px] font-mono px-2 py-1 rounded transition border cursor-pointer bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-800"
+                    className="text-[10px] font-mono px-2 py-1 rounded transition border cursor-pointer bg-[#111B15] border-[#1B3326] text-[#A0ADA4] hover:border-[#00E676] hover:text-[#00E676]"
                     title={sample.notes}
                   >
                     {sample.label}
@@ -358,15 +376,15 @@ export const DashboardPage: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-            <span className="text-xs text-slate-400">
+          <div className="mt-4 pt-3 border-t border-[#1B3326] flex items-center justify-between">
+            <span className="text-xs text-[#68776D] truncate max-w-sm">
               {simulationResult?.error
                 ? simulationResult.error.message
-                : 'Deterministic predictive parsing with visual trace.'}
+                : 'Deterministic predictive parsing with full trace.'}
             </span>
             <button
               onClick={() => navigate('/simulator')}
-              className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
+              className="text-xs font-medium text-[#00E676] hover:underline flex items-center gap-1 cursor-pointer"
             >
               Step-by-Step Trace &rarr;
             </button>
@@ -374,14 +392,17 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Preset Grammars Grid */}
-      <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-4">
+      {/* Benchmark Grammars Section */}
+      <div
+        id="benchmark-grammars-section"
+        className="p-6 rounded-xl bg-[#0D1410] border border-[#1B3326] space-y-4"
+      >
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-indigo-400" /> Preloaded Benchmark Grammars
+            <h3 className="text-base font-bold text-[#F5F7F5] flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-[#00E676]" /> Preloaded Benchmark Grammars
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#A0ADA4] mt-0.5">
               Select any classic problem statement from compiler design curricula to immediately populate the studio.
             </p>
           </div>
@@ -396,31 +417,31 @@ export const DashboardPage: React.FC = () => {
                 onClick={() => loadExample(ex.id)}
                 className={`p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-indigo-950/40 border-indigo-500/50 shadow-md shadow-indigo-950/30'
-                    : 'bg-[#090d16] border-slate-800/90 hover:border-slate-700 hover:bg-slate-900/50'
+                    ? 'bg-[#15231A] border-[#00E676]'
+                    : 'bg-[#111B15] border-[#1B3326] hover:border-[#00E676]/40 hover:bg-[#15231A]'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm font-semibold text-slate-200">
+                    <span className="text-sm font-semibold text-[#F5F7F5]">
                       {ex.name}
                     </span>
-                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#0D1410] text-[#00E676] border border-[#1B3326]">
                       {ex.category}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#A0ADA4] line-clamp-2 leading-relaxed">
                     {ex.description}
                   </p>
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-xs">
-                  <span className="font-mono text-[11px] text-slate-400">
+                <div className="mt-3 pt-2.5 border-t border-[#1B3326] flex items-center justify-between text-xs">
+                  <span className="font-mono text-[11px] text-[#68776D]">
                     {ex.grammarText.split('\n').length} rules
                   </span>
                   <span
                     className={`font-medium ${
-                      isSelected ? 'text-indigo-300' : 'text-slate-400 group-hover:text-slate-200'
+                      isSelected ? 'text-[#00E676]' : 'text-[#A0ADA4]'
                     }`}
                   >
                     {isSelected ? 'Loaded Active ✓' : 'Load Grammar'}

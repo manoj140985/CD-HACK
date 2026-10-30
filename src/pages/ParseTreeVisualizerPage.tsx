@@ -3,17 +3,14 @@ import {
   Network,
   ZoomIn,
   ZoomOut,
-  Maximize2,
   RotateCcw,
-  Layers,
-  Sparkles,
   Info,
 } from 'lucide-react';
 import { useGrammar } from '../context/GrammarContext.tsx';
 import { ParseTreeNode, EPSILON } from '../types/compiler.ts';
 
 export const ParseTreeVisualizerPage: React.FC = () => {
-  const { simulationResult, activeGrammar } = useGrammar();
+  const { simulationResult } = useGrammar();
 
   const [selectedNode, setSelectedNode] = useState<ParseTreeNode | null>(null);
   const [zoom, setZoom] = useState<number>(1);
@@ -86,8 +83,8 @@ export const ParseTreeVisualizerPage: React.FC = () => {
 
   if (!simulationResult || !root) {
     return (
-      <div className="p-8 text-center text-slate-400 bg-slate-900/60 rounded-xl border border-slate-800 space-y-3">
-        <Network className="w-10 h-10 text-slate-600 mx-auto" />
+      <div className="p-8 text-center text-[#A0ADA4] bg-[#0D1410] rounded-xl border border-[#1B3326] space-y-3">
+        <Network className="w-10 h-10 text-[#68776D] mx-auto" />
         <p>No parse tree available yet. Run the Predictive Parser on an input string to generate its derivation tree.</p>
       </div>
     );
@@ -96,13 +93,13 @@ export const ParseTreeVisualizerPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header and Controls */}
-      <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-            <Network className="w-4 h-4 text-indigo-400" />
+          <h2 className="text-base font-bold text-[#F5F7F5] flex items-center gap-2">
+            <Network className="w-4 h-4 text-[#00E676]" />
             Interactive Parse Tree Visualizer
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-[#A0ADA4] mt-0.5">
             Constructed directly from predictive parsing derivation steps. Drag to pan, scroll to zoom, click nodes to inspect.
           </p>
         </div>
@@ -111,24 +108,24 @@ export const ParseTreeVisualizerPage: React.FC = () => {
         <div className="flex items-center gap-2 text-xs">
           <button
             onClick={handleZoomIn}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+            className="p-2 rounded-lg bg-[#111B15] hover:bg-[#15231A] text-[#F5F7F5] border border-[#1B3326] transition cursor-pointer"
             title="Zoom In"
           >
-            <ZoomIn className="w-4 h-4" />
+            <ZoomIn className="w-4 h-4 text-[#00E676]" />
           </button>
           <button
             onClick={handleZoomOut}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer"
+            className="p-2 rounded-lg bg-[#111B15] hover:bg-[#15231A] text-[#F5F7F5] border border-[#1B3326] transition cursor-pointer"
             title="Zoom Out"
           >
-            <ZoomOut className="w-4 h-4" />
+            <ZoomOut className="w-4 h-4 text-[#00E676]" />
           </button>
           <button
             onClick={handleResetView}
-            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium flex items-center gap-1.5 transition cursor-pointer"
+            className="px-2.5 py-1.5 rounded-lg bg-[#111B15] hover:bg-[#15231A] text-[#F5F7F5] border border-[#1B3326] font-medium flex items-center gap-1.5 transition cursor-pointer"
             title="Reset Pan & Zoom"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#00E676]" />
             <span>Reset View ({Math.round(zoom * 100)}%)</span>
           </button>
         </div>
@@ -137,17 +134,17 @@ export const ParseTreeVisualizerPage: React.FC = () => {
       {/* Main Visualizer Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* SVG Canvas */}
-        <div className="lg:col-span-8 rounded-xl border border-slate-800 bg-[#060810] shadow-2xl overflow-hidden relative min-h-[560px] flex flex-col">
+        <div className="lg:col-span-8 rounded-xl border border-[#1B3326] bg-[#050807] shadow-2xl overflow-hidden relative min-h-[560px] flex flex-col">
           {/* Canvas Legend */}
-          <div className="absolute top-3 left-3 z-10 flex items-center gap-3 p-2 rounded-lg bg-slate-900/90 border border-slate-800 backdrop-blur text-[11px] font-mono pointer-events-none">
-            <span className="flex items-center gap-1 text-violet-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-violet-600 inline-block" /> Non-Terminal
+          <div className="absolute top-3 left-3 z-10 flex items-center gap-3 p-2 rounded-lg bg-[#0D1410]/90 border border-[#1B3326] backdrop-blur text-[11px] font-mono pointer-events-none">
+            <span className="flex items-center gap-1.5 text-[#69F0AE]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#00E676] inline-block" /> Non-Terminal
             </span>
-            <span className="flex items-center gap-1 text-emerald-300">
-              <span className="w-2.5 h-2.5 rounded-md bg-emerald-600 inline-block" /> Terminal Leaf
+            <span className="flex items-center gap-1.5 text-[#00E676]">
+              <span className="w-2.5 h-2.5 rounded-sm bg-[#111B15] border border-[#00E676] inline-block" /> Terminal Leaf
             </span>
-            <span className="flex items-center gap-1 text-amber-300">
-              <span className="w-2.5 h-2.5 rounded-md bg-amber-600 inline-block" /> Epsilon (ε)
+            <span className="flex items-center gap-1.5 text-[#FFD740]">
+              <span className="w-2.5 h-2.5 rounded-sm bg-[#111B15] border border-[#FFD740] inline-block" /> Epsilon (ε)
             </span>
           </div>
 
@@ -173,7 +170,7 @@ export const ParseTreeVisualizerPage: React.FC = () => {
                   <path
                     key={`edge_${idx}`}
                     d={`M ${x1} ${y1} C ${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`}
-                    stroke="#334155"
+                    stroke="#1B3326"
                     strokeWidth="2"
                     fill="none"
                   />
@@ -201,15 +198,15 @@ export const ParseTreeVisualizerPage: React.FC = () => {
                         width="32"
                         height="28"
                         rx="6"
-                        fill="#451a03"
-                        stroke={isSelected ? '#f59e0b' : '#b45309'}
-                        strokeWidth={isSelected ? 3 : 1.5}
-                        className="transition-all group-hover:stroke-amber-400"
+                        fill="#111B15"
+                        stroke={isSelected ? '#FFD740' : '#8c7300'}
+                        strokeWidth={isSelected ? 2.5 : 1.5}
+                        className="transition-all group-hover:stroke-[#FFD740]"
                       />
                       <text
                         textAnchor="middle"
                         dy="5"
-                        fill="#fde68a"
+                        fill="#FFD740"
                         fontSize="13"
                         fontWeight="bold"
                         fontFamily="monospace"
@@ -234,15 +231,15 @@ export const ParseTreeVisualizerPage: React.FC = () => {
                         width="40"
                         height="30"
                         rx="6"
-                        fill="#064e3b"
-                        stroke={isSelected ? '#34d399' : '#059669'}
-                        strokeWidth={isSelected ? 3 : 1.5}
-                        className="transition-all group-hover:stroke-emerald-300"
+                        fill="#111B15"
+                        stroke={isSelected ? '#69F0AE' : '#00E676'}
+                        strokeWidth={isSelected ? 2.5 : 1.5}
+                        className="transition-all group-hover:stroke-[#69F0AE]"
                       />
                       <text
                         textAnchor="middle"
                         dy="5"
-                        fill="#a7f3d0"
+                        fill="#00E676"
                         fontSize="12"
                         fontWeight="bold"
                         fontFamily="monospace"
@@ -263,21 +260,21 @@ export const ParseTreeVisualizerPage: React.FC = () => {
                   >
                     <circle
                       r={isRoot ? 22 : 19}
-                      fill={isRoot ? '#1e1b4b' : '#1e1b4b'}
+                      fill={isRoot ? '#15231A' : '#0D1410'}
                       stroke={
                         isSelected
-                          ? '#818cf8'
+                          ? '#00E676'
                           : isRoot
-                          ? '#6366f1'
-                          : '#4f46e5'
+                          ? '#00E676'
+                          : '#1B3326'
                       }
-                      strokeWidth={isSelected ? 3 : 2}
-                      className="transition-all group-hover:stroke-indigo-300"
+                      strokeWidth={isSelected ? 2.5 : 2}
+                      className="transition-all group-hover:stroke-[#00E676]"
                     />
                     <text
                       textAnchor="middle"
                       dy="5"
-                      fill="#e0e7ff"
+                      fill="#F5F7F5"
                       fontSize={isRoot ? 13 : 12}
                       fontWeight="bold"
                       fontFamily="monospace"
@@ -293,31 +290,31 @@ export const ParseTreeVisualizerPage: React.FC = () => {
 
         {/* Node Inspector Panel */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-4">
-            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-              <Info className="w-4 h-4 text-indigo-400" />
+          <div className="p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] space-y-4">
+            <h3 className="text-sm font-bold text-[#F5F7F5] flex items-center gap-2">
+              <Info className="w-4 h-4 text-[#00E676]" />
               Node Inspector
             </h3>
 
             {selectedNode ? (
               <div className="space-y-3 font-mono text-xs">
-                <div className="p-3 rounded-lg bg-[#070a12] border border-slate-800 space-y-1.5">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                <div className="p-3 rounded-lg bg-[#050807] border border-[#1B3326] space-y-1.5">
+                  <span className="text-[10px] text-[#68776D] uppercase tracking-wider block">
                     Selected Node Symbol
                   </span>
-                  <div className="text-lg font-bold text-indigo-300 flex items-center justify-between">
+                  <div className="text-lg font-bold text-[#00E676] flex items-center justify-between">
                     <span>{selectedNode.symbol}</span>
-                    <span className="text-[11px] font-normal px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                    <span className="text-[11px] font-normal px-2 py-0.5 rounded bg-[#111B15] text-[#A0ADA4] border border-[#1B3326]">
                       Depth: {selectedNode.depth}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-[#070a12] border border-slate-800 space-y-1">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                <div className="p-3 rounded-lg bg-[#050807] border border-[#1B3326] space-y-1">
+                  <span className="text-[10px] text-[#68776D] uppercase tracking-wider block">
                     Classification
                   </span>
-                  <span className="text-slate-200">
+                  <span className="text-[#F5F7F5]">
                     {selectedNode.isEpsilon
                       ? 'Epsilon Transition Leaf (ε)'
                       : selectedNode.isTerminal
@@ -327,19 +324,19 @@ export const ParseTreeVisualizerPage: React.FC = () => {
                 </div>
 
                 {selectedNode.ruleDisplay && (
-                  <div className="p-3 rounded-lg bg-[#070a12] border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                  <div className="p-3 rounded-lg bg-[#050807] border border-[#1B3326] space-y-1">
+                    <span className="text-[10px] text-[#68776D] uppercase tracking-wider block">
                       Production Rule Applied
                     </span>
-                    <span className="text-emerald-300 font-bold">
+                    <span className="text-[#00E676] font-bold">
                       {selectedNode.ruleDisplay}
                     </span>
                   </div>
                 )}
 
                 {selectedNode.children && selectedNode.children.length > 0 && (
-                  <div className="p-3 rounded-lg bg-[#070a12] border border-slate-800 space-y-1.5">
-                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
+                  <div className="p-3 rounded-lg bg-[#050807] border border-[#1B3326] space-y-1.5">
+                    <span className="text-[10px] text-[#68776D] uppercase tracking-wider block">
                       Direct Children ({selectedNode.children.length}):
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -348,10 +345,10 @@ export const ParseTreeVisualizerPage: React.FC = () => {
                           key={child.id}
                           className={`px-2 py-0.5 rounded text-[11px] ${
                             child.isTerminal
-                              ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-800/60'
+                              ? 'bg-[#111B15] text-[#00E676] border border-[#00E676]/30'
                               : child.isEpsilon
-                              ? 'bg-amber-950/70 text-amber-300 border border-amber-800/60'
-                              : 'bg-indigo-950/70 text-indigo-300 border border-indigo-800/60'
+                              ? 'bg-[#111B15] text-[#FFD740] border border-[#FFD740]/30'
+                              : 'bg-[#15231A] text-[#69F0AE] border border-[#1B3326]'
                           }`}
                         >
                           {child.symbol}
@@ -362,21 +359,21 @@ export const ParseTreeVisualizerPage: React.FC = () => {
                 )}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-[#A0ADA4] leading-relaxed">
                 Click any circle or rectangle in the diagram to inspect its derivation rule, child symbols, depth level, and token match.
               </p>
             )}
           </div>
 
           {/* Grammar Derivation Summary */}
-          <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 text-xs">
-            <span className="font-semibold text-slate-300 block">
+          <div className="p-5 rounded-xl bg-[#0D1410] border border-[#1B3326] space-y-2 text-xs">
+            <span className="font-semibold text-[#F5F7F5] block">
               Derivation Properties:
             </span>
-            <div className="text-slate-400 space-y-1 font-mono">
-              <div>Total Nodes: <strong className="text-slate-200">{nodes.length}</strong></div>
-              <div>Root Symbol: <strong className="text-indigo-400">{root.symbol}</strong></div>
-              <div>Leaves (Yield): <strong className="text-emerald-300">{nodes.filter((n) => n.isTerminal || n.isEpsilon).map((n) => n.symbol).join(' ')}</strong></div>
+            <div className="text-[#A0ADA4] space-y-1 font-mono">
+              <div>Total Nodes: <strong className="text-[#F5F7F5]">{nodes.length}</strong></div>
+              <div>Root Symbol: <strong className="text-[#00E676]">{root.symbol}</strong></div>
+              <div>Leaves (Yield): <strong className="text-[#69F0AE]">{nodes.filter((n) => n.isTerminal || n.isEpsilon).map((n) => n.symbol).join(' ')}</strong></div>
             </div>
           </div>
         </div>
