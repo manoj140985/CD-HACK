@@ -1,0 +1,6 @@
+{
+  "name": "ParseViz – Interactive LL(1) Grammar Practice Studio",
+  "description": "Interactive compiler design workbench for LL(1) grammar analysis, left recursion elimination, left factoring, FIRST/FOLLOW calculation, parse table generation, and step-by-step predictive parsing with visual parse trees.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
